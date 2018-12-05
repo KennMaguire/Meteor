@@ -28,14 +28,14 @@ myImage.draw(win)           #draw the image in the window
 
 for i in range(0, 360, 10):
     longLine = Line(Point((i*ratioLong),0), Point((i*ratioLong),height))
-    longLine.setOutline("#000000")
+    longLine.setOutline("#3890e2")
     longLine.setWidth(.01)
     longLine.draw(win)
 
 
 for i in range(0, 180, 10):
     latLine = Line(Point(0,(i*ratioLat)), Point(width, (i*ratioLat)))
-    latLine.setOutline("#000000")
+    latLine.setOutline("#3890e2")
     latLine.setWidth(1)
     latLine.draw(win)
 
