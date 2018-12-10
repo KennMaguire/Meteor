@@ -4,6 +4,9 @@ import time
 from graphics import *
 from PIL import Image as Im
 import struct
+import csv
+import math
+
 
 with open("images/BigEarth.gif", "rb") as fhandle:         #https://stackoverflow.com/questions/8032642/how-to-obtain-image-size-using-standard-python-class-without-using-external-lib
     head = fhandle.read(24)
@@ -18,30 +21,72 @@ win = GraphWin('Map',width, height)
 
 pt = Point(100,50)
 
+locMass = []
+with open('data/meteorite-landings.csv', 'r') as metFile:
+    next(metFile)
+    metReader = csv.reader(metFile, skipinitialspace = True, delimiter=',', quotechar = '"')
+    for row in metReader:
+        #geolocation @ 9, mass @ 4
+        #https://bytes.com/topic/python/answers/45526-convert-string-tuple
+        if row[4] != "" and row[4] != "0" and row[9] != "" and row[9] != "(0.000000, 0.000000)":
+            mass = float(row[4])
+            fall = row[5]
+            geo = row[9]
+            geo = tuple(map(float, geo[1:-1].split(",")))
+
+            locMass.append((geo, mass, fall))  #new list, geolocation @ 1, mass @ 2
+
+
+
+    #adding 180 to long, and 90 to lat since measurements in my space are from 0 to 360 and 0 to 180
 
 
 myImage = Image(Point((width/2),(height/2)), "images/BigEarth.gif")
 ratioLong = width/360
 ratioLat = height/180
-
+print(ratioLong)
+print(ratioLat)
 myImage.draw(win)           #draw the image in the window
 
 for i in range(0, 360, 10):
-    longLine = Line(Point((i*ratioLong),0), Point((i*ratioLong),height))
-    longLine.setOutline("#3890e2")
-    longLine.setWidth(.01)
-    longLine.draw(win)
+    if i != 0:
+        longLine = Line(Point((i*ratioLong),0), Point((i*ratioLong),height))
+        longLine.setOutline("#3890e2")
+        longLine.setWidth(1)
+        if i == 180:
+            longLine.setWidth(3)
+        longLine.draw(win)
 
 
 for i in range(0, 180, 10):
-    latLine = Line(Point(0,(i*ratioLat)), Point(width, (i*ratioLat)))
-    latLine.setOutline("#3890e2")
-    latLine.setWidth(1)
-    latLine.draw(win)
+    if i != 0:
+        latLine = Line(Point(0,(i*ratioLat)), Point(width, (i*ratioLat)))
+        latLine.setOutline("#3890e2")
+        latLine.setWidth(1)
+        if i == 90:
+            latLine.setWidth(3)
+        latLine.draw(win)
+total = 0
+for i in locMass:
+    lat = height - (((i[0][0] + 90) * (ratioLat)))
+    long = ((i[0][1] + 180) * (ratioLong))
+    #print((long,lat))
+    size = math.log(i[1],8)
+    #print(size)
+    cir = Circle(Point(long, lat), size)
+    if i[2] == "Fell":
+        cir.setOutline("red")
+        cir.setFill("red")
+    elif i[2] == "Found":
+        cir.setOutline("#45cb06")
+        cir.setFill("#45cb06")
+    else:
+        cir.setOutline("white")
+        cir.setFill("#1cba5b")
+    total += 1
+    print(total)
+    cir.draw(win)
 
-cir = Circle(Point(500,100),5)
-cir.setFill("blue")
-cir.draw(win)
 
 win.getMouse()
 win.close()
