@@ -75,10 +75,10 @@ for i in locMass:
     #print(size)
     cir = Circle(Point(long, lat), size)
     if i[2] == "Fell":
-        cir.setOutline("red")
+        cir.setOutline("#6c7287")
         cir.setFill("red")
     elif i[2] == "Found":
-        cir.setOutline("#45cb06")
+        cir.setOutline("#6c7287")
         cir.setFill("#45cb06")
     else:
         cir.setOutline("white")
